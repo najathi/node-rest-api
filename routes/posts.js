@@ -2,9 +2,27 @@ const express = require('express');
 const router = express.Router();
 const Post = require('../models/Post');
 
+// Validation using validation.js
+const { postValidation } = require('../validation');
+
+// Validation
+// const Joi = require('@hapi/joi');
+
+// const scheme = Joi.object({
+//     title: Joi.string().min(6).required(),
+//     description: Joi.string().min(6).required(),
+// });
 
 // Create Post
 router.post('/', (req, res, next) => {
+
+    // Let's validate the data before we a user
+    // const { error } = scheme.validate(req.body);
+
+    // Validation using validation.js
+    const { error } = postValidation(req.body);
+
+    if (error) return res.status(400).json({ message: error.details[0].message });
 
     const post = new Post({
         title: req.body.title,
@@ -65,6 +83,10 @@ router.get('/:id', async (req, res, next) => {
 
 // UPDATE Post
 router.patch('/:id', async (req, res, next) => {
+
+    const { error } = postValidation(req.body);
+
+    if (error) return res.status(400).json({ message: error.details[0].message });
 
     try {
 
